@@ -22,6 +22,7 @@ const BASE_URL = 'http://localhost:8080/location'
 
 const MapView = () => {
     const [locData, setLocData] = useState<any>([])
+    const [loading, setLoading] = useState(false)
 
     const callLoginApi = async (ip: string) => {
         const response = await axios.get(`${BASE_URL}/${ip}`, {
@@ -35,6 +36,8 @@ const MapView = () => {
     }
 
     const readFile = () => {
+        setLoading(true)
+
         fetch('/ip.txt')
             .then((r: any) => r.text())
             .then(async (textData: any) => {
@@ -52,6 +55,7 @@ const MapView = () => {
                 }))
 
                 setLocData(dataArr)
+                setLoading(false)
             })
     }
 
@@ -81,14 +85,19 @@ const MapView = () => {
     return (
         <>
             {
-                locData && locData.length > 0 &&
-                <VectorMap
-                    map={worldMill}
-                    markers={markers}
-                    onRegionTipShow={(e, el, code) => {
-                        e.preventDefault();
-                    }}
-                />
+                loading ? <span> ... Loading</span> :
+                    <>
+                        {
+                            locData && locData.length > 0 &&
+                            <VectorMap
+                                map={worldMill}
+                                markers={markers}
+                                onRegionTipShow={(e, el, code) => {
+                                    e.preventDefault();
+                                }}
+                            />
+                        }
+                    </>
             }
         </>
     )
